@@ -362,6 +362,7 @@ const val expectedGetBuildingAppResponse = """
 const val expectedUnparseableErrorResponse = """
     {
         "message": "Failed to GET building with ID = 1",
-        "throwable": "io.ktor.serialization.JsonConvertException"
+        "throwable": "io.ktor.serialization.JsonConvertException: Illegal input: Unexpected JSON token at offset 0: Expected start of the object '{', but had 'c' instead at path: ${'$'}
+JSON input: can't parse this"
     }
 """

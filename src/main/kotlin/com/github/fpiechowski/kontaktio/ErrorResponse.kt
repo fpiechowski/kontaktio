@@ -12,7 +12,7 @@ data class ErrorResponse(
         fun from(error: KontaktError): ErrorResponse = ErrorResponse(
             message = error.message,
             cause =  error.cause?.let { from(it) },
-            throwable = error.throwable?.let { it::class.qualifiedName }
+            throwable = error.throwable?.let { "${it::class.qualifiedName}: ${it.message}" }
         )
     }
 }
