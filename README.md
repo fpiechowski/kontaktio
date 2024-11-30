@@ -6,7 +6,18 @@ An example HTTP server built for [kontakt.io](https://kontakt.io) interview task
 
 ### JAR
 ```shell
-java -jar build/libs/kontaktio-1.0-SNAPSHOT-all.jar
+./gradlew build
+```
+```shell
+java -jar build/libs/kontaktio-all.jar
+```
+
+### Docker
+```shell
+docker build -t fpiechowski/kontaktio .
+```
+```shell
+docker run -p 8080:8080 -e environment=local fpiechowski/kontaktio
 ```
 
 ## Overview

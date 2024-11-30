@@ -2,6 +2,7 @@
 
 plugins {
     kotlin("jvm") version "2.1.0"
+    kotlin("plugin.serialization") version "2.1.0"
     id("com.github.johnrengelman.shadow") version "8.1.1"
     id("com.avast.gradle.docker-compose") version "0.17.11"
     application
@@ -22,28 +23,45 @@ dependencies {
     implementation(platform("io.arrow-kt:arrow-stack:1.2.4"))
     implementation("io.arrow-kt:arrow-core")
     implementation("io.arrow-kt:arrow-fx-coroutines")
+
     implementation("io.arrow-kt:suspendapp:0.4.0")
 
     implementation("io.github.oshai:kotlin-logging:7.0.0")
     implementation("ch.qos.logback:logback-classic:1.5.12")
+    implementation("io.ktor:ktor-client-logging-jvm:3.0.1")
 
-    implementation("com.sksamuel.hoplite:hoplite-core:2.9.0")
-    implementation("com.sksamuel.hoplite:hoplite-yaml:2.9.0")
-    implementation("com.sksamuel.hoplite:hoplite-arrow:2.9.0")
+    val hopliteVersion = "2.9.0"
+    implementation("com.sksamuel.hoplite:hoplite-core:$hopliteVersion")
+    implementation("com.sksamuel.hoplite:hoplite-yaml:$hopliteVersion")
+    implementation("com.sksamuel.hoplite:hoplite-arrow:$hopliteVersion")
+
+    implementation("org.jetbrains.kotlinx:kotlinx-serialization-json:1.7.3")
 
     val ktorVersion = "3.0.1"
     implementation("io.ktor:ktor-server-core:$ktorVersion")
     implementation("io.ktor:ktor-server-netty:$ktorVersion")
+    implementation("io.ktor:ktor-server-resources:$ktorVersion")
+    implementation("io.ktor:ktor-server-content-negotiation:$ktorVersion")
+    implementation("io.ktor:ktor-serialization-kotlinx-json:$ktorVersion")
+    implementation("io.ktor:ktor-server-resources:$ktorVersion")
 
+    implementation("io.ktor:ktor-client-logging:$ktorVersion")
+    implementation("io.ktor:ktor-client-content-negotiation:$ktorVersion")
+    implementation("io.ktor:ktor-serialization-kotlinx-json:$ktorVersion")
     implementation("io.ktor:ktor-client-core:$ktorVersion")
-    implementation("io.ktor:ktor-client-cio:$ktorVersion")
+    implementation("io.ktor:ktor-client-cio-jvm:$ktorVersion")
 
     val kotestVersion = "5.9.1"
     testImplementation("io.kotest:kotest-runner-junit5:$kotestVersion")
     testImplementation("io.kotest:kotest-assertions-core:$kotestVersion")
+
     testImplementation("io.kotest.extensions:kotest-assertions-ktor:2.0.0")
+    testImplementation("io.kotest:kotest-assertions-json:$kotestVersion")
 
     testImplementation("io.ktor:ktor-server-test-host-jvm:$ktorVersion")
+
+    testImplementation("com.github.tomakehurst:wiremock:3.0.1")
+
 }
 
 tasks {

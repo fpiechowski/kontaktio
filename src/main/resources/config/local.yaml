@@ -1,2 +1,4 @@
 ﻿server:
   port: 8080
+kontaktApi:
+  baseUrl: http://localhost:8081
