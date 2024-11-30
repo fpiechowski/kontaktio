@@ -5,10 +5,18 @@ mind.
 
 ## Usage
 
-### JAR
+### Build & Test
+
+Requires Docker for running integration test environment.
 
 ```shell
 ./gradlew build
+```
+
+### JAR
+
+```shell
+./gradlew shadowJar
 ```
 
 ```shell
@@ -24,6 +32,23 @@ docker build -t fpiechowski/kontaktio .
 ```shell
 docker run -p 8080:8080 -e environment=local fpiechowski/kontaktio
 ```
+
+## Production Usage
+Update config files for any target environment. Provide API Key for Kontakt.io Developer API as well as API URL. 
+
+```yaml
+# production.yaml
+
+kontaktApi:
+  baseUrl: https://apps.cloud.us.kontakt.io
+  apiKey: real
+```
+
+Use `X-Request-Id` header for tracing.
+
+You can also provide then using environment variables for sensitive data:
+`config.override.kontaktApi.baseUrl`,
+`config.override.kontaktApi.apiKey`, etc.
 
 ## Overview
 

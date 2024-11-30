@@ -1,8 +1,10 @@
 ﻿package com.github.fpiechowski.kontaktio
 
 import arrow.core.raise.either
-import com.sksamuel.hoplite.ConfigLoader
+import com.sksamuel.hoplite.ConfigLoaderBuilder
+import com.sksamuel.hoplite.addResourceSource
 import com.sksamuel.hoplite.fp.getOrElse
+import com.sksamuel.hoplite.sources.EnvironmentVariableOverridePropertySource
 
 data class Config(val server: Server, val kontaktApi: KontaktApi) {
     data class Server(val port: Int)
@@ -11,7 +13,11 @@ data class Config(val server: Server, val kontaktApi: KontaktApi) {
     companion object {
         fun load(environment: Environment) =
             either {
-                ConfigLoader().loadConfig<Config>("/config/${environment.value}.yaml")
+                ConfigLoaderBuilder.default()
+                    .addResourceSource("/config/${environment.value}.yaml")
+                    .addSource(EnvironmentVariableOverridePropertySource(false))
+                    .build()
+                    .loadConfig<Config>()
                     .getOrElse {
                         raise(ConfigFailureError(it.description()))
                     }
