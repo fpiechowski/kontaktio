@@ -4,6 +4,7 @@ import arrow.core.raise.catch
 import arrow.core.raise.either
 import arrow.core.raise.recover
 import com.github.fpiechowski.kontaktio.Building
+import com.github.fpiechowski.kontaktio.BuildingResponse.Factory
 import io.github.oshai.kotlinlogging.KotlinLogging
 import io.ktor.client.*
 import io.ktor.client.call.*
