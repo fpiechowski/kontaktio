@@ -1,7 +1,6 @@
 ﻿package com.github.fpiechowski.kontaktio
 
 import com.github.tomakehurst.wiremock.client.WireMock
-import io.github.oshai.kotlinlogging.KotlinLogging
 import io.kotest.assertions.json.shouldEqualJson
 import io.kotest.assertions.ktor.client.shouldHaveStatus
 import io.kotest.core.spec.style.FreeSpec
@@ -10,10 +9,9 @@ import io.ktor.client.*
 import io.ktor.client.plugins.logging.*
 import io.ktor.client.request.*
 import io.ktor.client.statement.*
+import io.ktor.http.*
 
 class IntegrationTest : FreeSpec({
-
-    val logger = KotlinLogging.logger("IntegrationTest")
 
     beforeSpec { WireMock.reset() }
 
@@ -35,6 +33,7 @@ class IntegrationTest : FreeSpec({
             "successful response" - {
                 WireMock.stubFor(
                     WireMock.get(WireMock.urlPathEqualTo("/v2/locations/buildings/$id"))
+                        .withHeader(ApiKeyHttpHeader, WireMock.equalTo("fake"))
                         .willReturn(
                             WireMock.aResponse()
                                 .withBody(testGetBuildingApiResponse)
@@ -43,17 +42,22 @@ class IntegrationTest : FreeSpec({
                         )
                 )
 
-                val response = httpClient.get("$appUrl/buildings/$id")
+                val response = httpClient.get("$appUrl/buildings/$id") {
+                    header(HttpHeaders.XRequestId, "test")
+                }
 
                 "responds 200 OK and building JSON" {
                     response.shouldHaveStatus(200)
                     response.bodyAsText() shouldEqualJson expectedGetBuildingAppResponse
+
+                    WireMock.verify(WireMock.getRequestedFor(WireMock.urlPathEqualTo("/v2/locations/buildings/$id")))
                 }
             }
 
             "unsuccessful response" - {
                 WireMock.stubFor(
                     WireMock.get(WireMock.urlPathEqualTo("/v2/locations/buildings/$id"))
+                        .withHeader(ApiKeyHttpHeader, WireMock.equalTo("fake"))
                         .willReturn(
                             WireMock.aResponse()
                                 .withHeader("Content-Type", "application/json")
@@ -61,16 +65,21 @@ class IntegrationTest : FreeSpec({
                         )
                 )
 
-                val response = httpClient.get("$appUrl/buildings/$id")
+                val response = httpClient.get("$appUrl/buildings/$id") {
+                    header(HttpHeaders.XRequestId, "test")
+                }
 
                 "responds 404 Not Found" {
                     response.shouldHaveStatus(404)
+
+                    WireMock.verify(WireMock.getRequestedFor(WireMock.urlPathEqualTo("/v2/locations/buildings/$id")))
                 }
             }
 
             "unparseable response" - {
                 WireMock.stubFor(
                     WireMock.get(WireMock.urlPathEqualTo("/v2/locations/buildings/$id"))
+                        .withHeader(ApiKeyHttpHeader, WireMock.equalTo("fake"))
                         .willReturn(
                             WireMock.aResponse()
                                 .withHeader("Content-Type", "application/json")
@@ -79,11 +88,15 @@ class IntegrationTest : FreeSpec({
                         )
                 )
 
-                val response = httpClient.get("$appUrl/buildings/$id")
+                val response = httpClient.get("$appUrl/buildings/$id") {
+                    header(HttpHeaders.XRequestId, "test")
+                }
 
                 "responds 500 Internal Server Error" {
                     response.shouldHaveStatus(500)
                     response.bodyAsText() shouldEqualJson expectedUnparseableErrorResponse
+
+                    WireMock.verify(WireMock.getRequestedFor(WireMock.urlPathEqualTo("/v2/locations/buildings/$id")))
                 }
             }
         }

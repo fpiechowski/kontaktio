@@ -2,6 +2,7 @@
 
 enum class Environment(val value: String) {
     Local("local"),
+    Docker("docker"),
     Staging("staging"),
     Production("production");
 
@@ -9,6 +10,7 @@ enum class Environment(val value: String) {
         fun fromSystem(): Environment =
             when (System.getenv("environment")) {
                 Local.value -> Local
+                Docker.value -> Docker
                 Staging.value -> Staging
                 Production.value -> Production
                 else -> Local

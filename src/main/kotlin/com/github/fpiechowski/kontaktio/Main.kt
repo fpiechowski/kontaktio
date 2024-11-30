@@ -6,18 +6,16 @@ import arrow.fx.coroutines.resourceScope
 import io.github.oshai.kotlinlogging.KLogger
 import io.github.oshai.kotlinlogging.KotlinLogging
 import io.ktor.client.*
+import io.ktor.client.plugins.callid.*
 import io.ktor.client.plugins.contentnegotiation.*
 import io.ktor.client.plugins.logging.*
 import io.ktor.serialization.kotlinx.json.*
-import io.ktor.server.application.*
 import io.ktor.server.engine.*
 import io.ktor.server.netty.*
-import io.ktor.server.plugins.contentnegotiation.*
-import io.ktor.server.resources.*
 import kotlinx.coroutines.awaitCancellation
 import kotlinx.serialization.json.Json
+import io.ktor.client.plugins.callid.CallId as ClientCallId
 import io.ktor.client.plugins.contentnegotiation.ContentNegotiation as ClientContentNegotiation
-import io.ktor.server.plugins.contentnegotiation.ContentNegotiation as ServerContentNegotiation
 
 fun main() = SuspendApp {
     val logger = KotlinLogging.logger("Main")
@@ -25,6 +23,8 @@ fun main() = SuspendApp {
     recover<KontaktError, Unit>(
         block = {
             val environment = Environment.fromSystem()
+                .also { logger.info { "Loaded environment: $it" } }
+
             val config = Config.load(environment).bind()
             val json = Json {
                 ignoreUnknownKeys = true
@@ -36,16 +36,13 @@ fun main() = SuspendApp {
                 install(ClientContentNegotiation) {
                     json(json)
                 }
+                install(ClientCallId)
             }
 
             resourceScope {
                 install({
                     embeddedServer(Netty, config.server.port) {
-                        install(Resources)
-                        install(ServerContentNegotiation) {
-                            json(json)
-                        }
-
+                        plugins(json)
                         healthCheck()
                         building(getBuilding(httpClient, config), BuildingResponse.Factory.withDecodedImage(json))
                     }.start()

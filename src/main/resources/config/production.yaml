@@ -1,0 +1,5 @@
+﻿server:
+  port: 8080
+kontaktApi:
+  baseUrl: https://apps.cloud.us.kontakt.io
+  apiKey: real

@@ -6,7 +6,7 @@ import com.sksamuel.hoplite.fp.getOrElse
 
 data class Config(val server: Server, val kontaktApi: KontaktApi) {
     data class Server(val port: Int)
-    data class KontaktApi(val baseUrl: String)
+    data class KontaktApi(val baseUrl: String, val apiKey: String)
 
     companion object {
         fun load(environment: Environment) =

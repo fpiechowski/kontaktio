@@ -1,4 +1,5 @@
-﻿import com.github.jengelman.gradle.plugins.shadow.tasks.ShadowJar
+﻿import com.avast.gradle.dockercompose.RemoveImages
+import com.github.jengelman.gradle.plugins.shadow.tasks.ShadowJar
 
 plugins {
     kotlin("jvm") version "2.1.0"
@@ -28,7 +29,8 @@ dependencies {
 
     implementation("io.github.oshai:kotlin-logging:7.0.0")
     implementation("ch.qos.logback:logback-classic:1.5.12")
-    implementation("io.ktor:ktor-client-logging-jvm:3.0.1")
+    implementation("net.logstash.logback:logstash-logback-encoder:8.0")
+    implementation("org.codehaus.janino:janino:3.1.12")
 
     val hopliteVersion = "2.9.0"
     implementation("com.sksamuel.hoplite:hoplite-core:$hopliteVersion")
@@ -38,18 +40,21 @@ dependencies {
     implementation("org.jetbrains.kotlinx:kotlinx-serialization-json:1.7.3")
 
     val ktorVersion = "3.0.1"
+    implementation("io.ktor:ktor-serialization-kotlinx-json:$ktorVersion")
+
     implementation("io.ktor:ktor-server-core:$ktorVersion")
     implementation("io.ktor:ktor-server-netty:$ktorVersion")
     implementation("io.ktor:ktor-server-resources:$ktorVersion")
     implementation("io.ktor:ktor-server-content-negotiation:$ktorVersion")
-    implementation("io.ktor:ktor-serialization-kotlinx-json:$ktorVersion")
     implementation("io.ktor:ktor-server-resources:$ktorVersion")
+    implementation("io.ktor:ktor-server-call-id:$ktorVersion")
+    implementation("io.ktor:ktor-server-call-logging:$ktorVersion")
 
     implementation("io.ktor:ktor-client-logging:$ktorVersion")
     implementation("io.ktor:ktor-client-content-negotiation:$ktorVersion")
-    implementation("io.ktor:ktor-serialization-kotlinx-json:$ktorVersion")
     implementation("io.ktor:ktor-client-core:$ktorVersion")
-    implementation("io.ktor:ktor-client-cio-jvm:$ktorVersion")
+    implementation("io.ktor:ktor-client-cio:$ktorVersion")
+    implementation("io.ktor:ktor-client-call-id:$ktorVersion")
 
     val kotestVersion = "5.9.1"
     testImplementation("io.kotest:kotest-runner-junit5:$kotestVersion")
@@ -130,4 +135,6 @@ configurations["domainRuntimeOnly"].extendsFrom(configurations.runtimeOnly.get()
 dockerCompose {
     setProjectName("kontaktio")
     useComposeFiles.set(listOf("src/integrationTest/resources/docker-compose.yaml"))
+    captureContainersOutput = true
+    removeImages.set(RemoveImages.All)
 }

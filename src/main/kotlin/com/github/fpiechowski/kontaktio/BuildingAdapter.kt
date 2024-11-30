@@ -25,12 +25,16 @@ private val logger = KotlinLogging.logger("BuildingAdapter")
 
 private fun getBuildingPath(id: Id) = "/v2/locations/buildings/$id"
 
+val ApiKeyHttpHeader get() = "Api-Key"
+
 fun getBuilding(httpClient: HttpClient, config: Config): GetBuilding = { id ->
     either {
         catch(
             block = {
                 val url = config.kontaktApi.baseUrl.removeSuffix("/") + getBuildingPath(id)
-                val response = httpClient.get(url)
+                val response = httpClient.get(url) {
+                    header(ApiKeyHttpHeader, config.kontaktApi.apiKey)
+                }
 
                 when {
                     response.status.isSuccess() -> response.body<SourceBuildingResponse>()
