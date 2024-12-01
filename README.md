@@ -44,11 +44,11 @@ kontaktApi:
   apiKey: real
 ```
 
-Use `X-Request-Id` header for tracing.
-
 You can also provide then using environment variables for sensitive data:
 `config.override.kontaktApi.baseUrl`,
 `config.override.kontaktApi.apiKey`, etc.
+
+Use `X-Request-Id` header for tracing.
 
 ## Overview
 

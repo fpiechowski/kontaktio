@@ -1,5 +1,7 @@
 ﻿server:
   port: 8080
+  ioThreads: 8
+  logicThreads: 16
 kontaktApi:
   baseUrl: https://apps.cloud.us.kontakt.io
   apiKey: real

@@ -8,6 +8,7 @@ import io.github.oshai.kotlinlogging.KotlinLogging
 import io.ktor.client.*
 import io.ktor.client.plugins.logging.*
 import io.ktor.serialization.kotlinx.json.*
+import io.ktor.server.application.*
 import io.ktor.server.engine.*
 import io.ktor.server.netty.*
 import kotlinx.coroutines.awaitCancellation
@@ -39,11 +40,22 @@ fun main() = SuspendApp {
 
             resourceScope {
                 install({
-                    embeddedServer(Netty, config.server.port) {
-                        plugins(json)
-                        healthCheck()
-                        building(getBuilding(httpClient, config), BuildingResponse.Factory.withDecodedImage(json))
-                    }.start()
+                    embeddedServer(
+                        Netty,
+                        configure = {
+                            workerGroupSize = config.server.ioThreads
+                            callGroupSize = config.server.logicThreads
+
+                            connector {
+                                port = config.server.port
+                            }
+                        },
+                        module = {
+                            this.environment
+                            plugins(json)
+                            healthCheck()
+                            building(getBuilding(httpClient, config), BuildingResponse.Factory.withDecodedImage(json))
+                        }).start()
                 }) { engine, _ ->
                     engine.stop(gracePeriodMillis = 1000, timeoutMillis = 1000)
                 }

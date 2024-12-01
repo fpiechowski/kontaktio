@@ -1,5 +1,7 @@
 ﻿server:
   port: 8080
+  ioThreads: 8
+  logicThreads: 16
 kontaktApi:
   baseUrl: http://api:8080
   apiKey: fake

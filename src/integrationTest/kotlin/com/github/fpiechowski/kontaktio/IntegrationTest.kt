@@ -1,15 +1,21 @@
 ﻿package com.github.fpiechowski.kontaktio
 
 import com.github.tomakehurst.wiremock.client.WireMock
+import io.github.oshai.kotlinlogging.KotlinLogging
 import io.kotest.assertions.json.shouldEqualJson
 import io.kotest.assertions.ktor.client.shouldHaveStatus
+import io.kotest.assertions.withClue
 import io.kotest.core.spec.style.FreeSpec
+import io.kotest.matchers.longs.shouldBeLessThan
 import io.kotest.matchers.shouldBe
 import io.ktor.client.*
 import io.ktor.client.plugins.logging.*
 import io.ktor.client.request.*
 import io.ktor.client.statement.*
 import io.ktor.http.*
+import kotlinx.coroutines.async
+import kotlinx.coroutines.awaitAll
+import kotlin.system.measureTimeMillis
 
 class IntegrationTest : FreeSpec({
 
@@ -101,8 +107,39 @@ class IntegrationTest : FreeSpec({
             }
         }
     }
+
+    "performance" - {
+        WireMock.stubFor(
+            WireMock.get(WireMock.urlPathEqualTo("/v2/locations/buildings/1"))
+                .withHeader(ApiKeyHttpHeader, WireMock.equalTo("fake"))
+                .willReturn(
+                    WireMock.aResponse()
+                        .withBody(testGetBuildingApiResponse)
+                        .withHeader("Content-Type", "application/json")
+                        .withStatus(200)
+                )
+        )
+
+        val sample = 1000
+        val duration = measureTimeMillis {
+            (1..sample).map { id ->
+                async {
+                    httpClient.get("$appUrl/buildings/1") {
+                        header(HttpHeaders.XRequestId, "test")
+                    }
+                }
+            }.awaitAll()
+        }
+
+        withClue("App is not performing well") {
+            ((duration / sample) * 50).also {
+                logger.info { "$it ms per 50 requests" }
+            }.shouldBeLessThan(1000)
+        }
+    }
 }) {
     companion object {
+        val logger = KotlinLogging.logger("IntegrationTest")
         val httpClient = HttpClient {
             install(Logging) {
                 level = LogLevel.BODY
