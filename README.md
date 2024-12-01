@@ -20,6 +20,10 @@ Requires Docker for running integration test environment.
 ```
 
 ```shell
+export environment=local
+```
+
+```shell
 java -jar build/libs/kontaktio-all.jar
 ```
 
@@ -30,7 +34,7 @@ docker build -t fpiechowski/kontaktio .
 ```
 
 ```shell
-docker run -p 8080:8080 -e environment=local fpiechowski/kontaktio
+docker run -p 8080:8080 -e environment=docker fpiechowski/kontaktio
 ```
 
 ## Production Usage
@@ -47,6 +51,8 @@ kontaktApi:
 You can also provide then using environment variables for sensitive data:
 `config.override.kontaktApi.baseUrl`,
 `config.override.kontaktApi.apiKey`, etc.
+
+Adjust `server.ioThreads` and `server.logicThreads` to the host machine capabilities.
 
 Use `X-Request-Id` header for tracing.
 
