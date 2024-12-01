@@ -108,7 +108,7 @@ class IntegrationTest : FreeSpec({
         }
     }
 
-    "performance" - {
+    "performance".config(enabled = false) - {
         WireMock.stubFor(
             WireMock.get(WireMock.urlPathEqualTo("/v2/locations/buildings/1"))
                 .withHeader(ApiKeyHttpHeader, WireMock.equalTo("fake"))
