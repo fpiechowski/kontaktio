@@ -135,6 +135,6 @@ configurations["domainRuntimeOnly"].extendsFrom(configurations.runtimeOnly.get()
 dockerCompose {
     setProjectName("kontaktio")
     useComposeFiles.set(listOf("src/integrationTest/resources/docker-compose.yaml"))
-    captureContainersOutput = true
+    captureContainersOutput = false
     removeImages.set(RemoveImages.All)
 }
