@@ -1,0 +1,15 @@
+﻿services:
+  kontaktio:
+    build: ../../../
+    ports:
+      - "8080:8080"
+    environment:
+      environment: docker
+    restart: on-failure
+    depends_on:
+      - api
+  api:
+    image: "wiremock/wiremock:latest"
+    ports:
+      - "8081:8080"
+    entrypoint: [ "/docker-entrypoint.sh", "--global-response-templating", "--disable-gzip", "--verbose" ]
